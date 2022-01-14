@@ -1,13 +1,15 @@
 package com.bang.mqttclient.dto;
 
-import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import java.nio.charset.StandardCharsets;
 
 public class RequestMessage {
-    private final String topic;
-    private final String payload;
+    private String topic;
+    private String payload;
+
+    protected RequestMessage() {
+    }
 
     public RequestMessage(String topic, String payload) {
         this.topic = topic;
@@ -23,5 +25,17 @@ public class RequestMessage {
 
     public String getTopic() {
         return topic;
+    }
+
+    public String getPayload() {
+        return payload;
+    }
+
+    public void setTopic(String topic) {
+        this.topic = topic;
+    }
+
+    public void setPayload(String payload) {
+        this.payload = payload;
     }
 }

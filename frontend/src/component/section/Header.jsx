@@ -33,22 +33,24 @@ const initMqttConfig = {
     connectionTimeout: 30
 }
 
-function Header() {
+const Header = ({connected, onConnected}) => {
     const [mqttConfig, setMqttConfig] = useState(initMqttConfig);
     const [open, setOpen] = useState(false);
-    const [connected, setConnected] = useState(false);
 
     useEffect(() => {
         mqttApi.status()
-            .then(data => setConnected(data))
+            .then(data => {
+                onConnected(data);
+                if(data) {
+                    mqttApi.get()
+                        .then(data => {
+                            setMqttConfig(data);
+                        })
+                        .catch(error => console.log(error));
+                }
+            })
             .catch(error => console.log(error));
     }, []);
-
-
-    useEffect(() => {
-        setOpen(true);
-    }, [connected]);
-
 
     const onChangeHandler = (e) => {
         const {name, value} = e.target;
@@ -72,7 +74,10 @@ function Header() {
     const connectMqtt = () => {
         if(!connected) {
             mqttApi.connect(mqttConfig)
-                .then(data => setConnected(data))
+                .then(data => {
+                    onConnected(data);
+                    setOpen(true);
+                })
                 .catch(error => console.log(error));
         }
     }
@@ -80,7 +85,10 @@ function Header() {
     const disconnectMqtt = () => {
         if(connected) {
             mqttApi.disconnect()
-                .then(data => setConnected(data))
+                .then(data => {
+                    onConnected(!data);
+                    setOpen(true);
+                })
                 .catch(error => console.log(error));
         }
     }
